@@ -2,7 +2,7 @@ service: serverless
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs14.x
   stage: dev
   region: us-east-1
 
@@ -12,7 +12,7 @@ functions:
     timeout: 60 # seconds
     memorySize: 128 # mb
 
-resources: # CloudFormation template syntax from here on.
+resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
@@ -33,34 +33,24 @@ resources: # CloudFormation template syntax from here on.
       Properties:
         Name: MyAPIGateway
 
-    apiGatewayDeployment:
-      Type: AWS::ApiGateway::Deployment
+    apiGatewayResource:
+      Type: AWS::ApiGateway::Resource
       Properties:
         RestApiId: !Ref apiGatewayRestApi
-
-    apiGatewayStage:
-      Type: AWS::ApiGateway::Stage
-      Properties:
-        RestApiId: !Ref apiGatewayRestApi
-        DeploymentId: !Ref apiGatewayDeployment
-        StageName: dev
+        ParentId: !GetAtt apiGatewayRestApi.RootResourceId
+        PathPart: hello
 
     apiGatewayMethod:
       Type: AWS::ApiGateway::Method
       Properties:
         RestApiId: !Ref apiGatewayRestApi
-        ResourceId: !GetAtt apiGatewayRestApi.RootResourceId
+        ResourceId: !Ref apiGatewayResource
         HttpMethod: GET
         AuthorizationType: NONE
         Integration:
-          Type: MOCK
-          IntegrationResponses:
-            - StatusCode: 200
-              ResponseTemplates:
-                application/json: |
-                  {
-                    "message": "Hello from API Gateway!"
-                  }
+          Type: AWS_PROXY
+          IntegrationHttpMethod: POST
+          Uri: !Sub
+            - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+            - lambdaArn: !GetAtt hello.Arn
           PassthroughBehavior: WHEN_NO_MATCH
-          RequestTemplates:
-            application/json: "{\"statusCode\": 200}"
