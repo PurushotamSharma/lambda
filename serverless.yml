@@ -12,8 +12,9 @@ functions:
     timeout: 60 # seconds
     memorySize: 128 # mb
     events:
-      - http:  generateRandomNumber
-      - method : get
+      - http:
+          path: generateRandomNumber
+          method: get
 
 resources: # CloudFormation template syntax from here on.
   Resources:
