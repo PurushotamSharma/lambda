@@ -14,14 +14,26 @@ resources:
         Name: MyDemoAPI
         Description: This is my API for demonstration purposes
 
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
 functions:
   hello:
     handler: src/handler.generateRandomNumber
     timeout: 60 # seconds
     memorySize: 128 # mb
-
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: MyDemoAPI
-        Description: This is my API for demonstration purposes
+    events:
+      - http:
+          path: generateRandomNumber
+          method: get
