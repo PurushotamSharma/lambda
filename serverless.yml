@@ -57,7 +57,7 @@ resources:
           IntegrationHttpMethod: POST
           Type: AWS_PROXY
           Uri:
-            Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${helloLambdaFunction.Arn}/invocations
+            Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${hello.Arn}/invocations
 
     ApiGatewayDeployment:
       Type: AWS::ApiGateway::Deployment
