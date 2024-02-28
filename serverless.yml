@@ -6,6 +6,12 @@ provider:
   stage: dev
   region: ap-south-1
 
+functions:
+  hello:
+    handler: src/handler.generateRandomNumber
+    timeout: 60 # seconds
+    memorySize: 128 # mb
+
 resources:
   Resources:
     usersTable:
@@ -21,13 +27,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-
-functions:
-  hello:
-    handler: src/handler.generateRandomNumber
-    timeout: 60 # seconds
-    memorySize: 128 # mb
-    events:
-      - http:
-          path: generateRandomNumber
-          method: get
