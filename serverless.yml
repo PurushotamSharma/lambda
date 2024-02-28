@@ -2,7 +2,7 @@ service: serverless
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   stage: dev
   region: us-east-1
 
@@ -11,8 +11,11 @@ functions:
     handler: src/handler.generateRandomNumber
     timeout: 60 # seconds
     memorySize: 128 # mb
+    events:
+      - http:  generateRandomNumber
+      - method : get
 
-resources:
+resources: # CloudFormation template syntax from here on.
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
@@ -27,30 +30,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-
-    apiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: MyAPIGateway
-
-    apiGatewayResource:
-      Type: AWS::ApiGateway::Resource
-      Properties:
-        RestApiId: !Ref apiGatewayRestApi
-        ParentId: !GetAtt apiGatewayRestApi.RootResourceId
-        PathPart: hello
-
-    apiGatewayMethod:
-      Type: AWS::ApiGateway::Method
-      Properties:
-        RestApiId: !Ref apiGatewayRestApi
-        ResourceId: !Ref apiGatewayResource
-        HttpMethod: GET
-        AuthorizationType: NONE
-        Integration:
-          Type: AWS_PROXY
-          IntegrationHttpMethod: POST
-          Uri: !Sub
-            - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
-            - lambdaArn: !GetAtt hello.Arn
-          PassthroughBehavior: WHEN_NO_MATCH
