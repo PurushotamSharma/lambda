@@ -8,12 +8,6 @@ provider:
 
 resources:
   Resources:
-    MyDemoAPI:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: MyDemoAPI
-        Description: This is my API for demonstration purposes
-
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
