@@ -12,55 +12,18 @@ functions:
     timeout: 60 # seconds
     memorySize: 128 # mb
 
-resources:
+resources: # CloudFormation template syntax from here on.
   Resources:
-    RandomNumberTable:
+    usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: RandomNumberTable
+        TableName: usersTable
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: email
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
-
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: MyApiGateway
-
-    ApiGatewayResource:
-      Type: AWS::ApiGateway::Resource
-      Properties:
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        ParentId:
-          Fn::GetAtt:
-            - ApiGatewayRestApi
-            - RootResourceId
-        PathPart: myresource
-
-    ApiGatewayMethod:
-      Type: AWS::ApiGateway::Method
-      Properties:
-        HttpMethod: GET
-        ResourceId:
-          Ref: ApiGatewayResource
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        AuthorizationType: NONE
-        Integration:
-          IntegrationHttpMethod: POST
-          Type: AWS_PROXY
-          Uri:
-            Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${helloLambdaFunction.Arn}/invocations
-
-    ApiGatewayDeployment:
-      Type: AWS::ApiGateway::Deployment
-      Properties:
-        RestApiId:
-          Ref: ApiGatewayRestApi
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
