@@ -12,7 +12,7 @@ functions:
     timeout: 60 # seconds
     memorySize: 128 # mb
 
-resources:
+resources: # CloudFormation template syntax from here on.
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
@@ -44,3 +44,23 @@ resources:
         RestApiId: !Ref apiGatewayRestApi
         DeploymentId: !Ref apiGatewayDeployment
         StageName: dev
+
+    apiGatewayMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        RestApiId: !Ref apiGatewayRestApi
+        ResourceId: !GetAtt apiGatewayRestApi.RootResourceId
+        HttpMethod: GET
+        AuthorizationType: NONE
+        Integration:
+          Type: MOCK
+          IntegrationResponses:
+            - StatusCode: 200
+              ResponseTemplates:
+                application/json: |
+                  {
+                    "message": "Hello from API Gateway!"
+                  }
+          PassthroughBehavior: WHEN_NO_MATCH
+          RequestTemplates:
+            application/json: "{\"statusCode\": 200}"
