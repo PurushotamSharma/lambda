@@ -12,7 +12,7 @@ functions:
     timeout: 60 # seconds
     memorySize: 128 # mb
 
-resources: # CloudFormation template syntax from here on.
+resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
@@ -27,3 +27,20 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    apiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: MyAPIGateway
+
+    apiGatewayDeployment:
+      Type: AWS::ApiGateway::Deployment
+      Properties:
+        RestApiId: !Ref apiGatewayRestApi
+
+    apiGatewayStage:
+      Type: AWS::ApiGateway::Stage
+      Properties:
+        RestApiId: !Ref apiGatewayRestApi
+        DeploymentId: !Ref apiGatewayDeployment
+        StageName: dev

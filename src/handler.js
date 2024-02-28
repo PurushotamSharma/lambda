@@ -1,18 +1,7 @@
 'use strict';
 
-module.exports.myFunction = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+module.exports.generateRandomNumber = event => {
+  const randomNumber = parseInt(Math.random() * 100);
+  console.log("The random generated integer is: ", randomNumber);
+  return randomNumber;
 };
