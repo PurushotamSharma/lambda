@@ -6,26 +6,26 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: deploy
+  deploy_source:
+    name: AWS Lambda Deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
+      - uses: actions/checkout@v1
+      - name: Build the application
+        run:  npm i
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      - name: Zip output
+        run: zip -qq -r ./bundle.zip ./
+        working-directory: ./
+      - name: AWS Lambda Deploy
+        if: github.ref == 'refs/heads/development'
+        uses: appleboy/lambda-action@v0.1.9
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        # //  aws_region: ${{ secrets.AWS_REGION }}
+        #  //  function_name: 	sam-register-advertiser-dev
 
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: serverless deploy
-      uses: serverless/github-action@master
-      with:
-        args: deploy
-      env:
-        # SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-        # or if using AWS credentials directly
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          zip_file: ./authService/register-advertiser/bundle.zip
+  
